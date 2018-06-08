@@ -58,7 +58,7 @@ object Cradle {
   }
 
   def emit(s: String): Unit = {
-    print(TAB)
+    print("    ")
     print(s)
   }
 
@@ -73,6 +73,30 @@ object Cradle {
 
   def main(args: Array[String]): Unit = {
     init()
+    emitPrologue()
+    expression()
+    emitEpilogue()
+  }
+
+  def expression(): Unit = {
+    emitLn(s"mov rax, ${getNum()}")
+  }
+
+  def emitPrologue(): Unit = {
+    print(
+      """|section .data
+         |
+         |section .text
+         |    global _start
+         |
+         |_start:
+         |""".stripMargin)
+  }
+
+  def emitEpilogue(): Unit = {
+    emitLn("mov rax, 60")
+    emitLn("mov rdi, 0")
+    emitLn("syscall")
   }
 
 }
