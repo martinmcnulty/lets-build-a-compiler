@@ -84,9 +84,7 @@ object Cradle {
 
   def emitPrologue(): Unit = {
     print(
-      """|section .data
-         |
-         |section .text
+      """|section .text
          |    global _start
          |
          |_start:
