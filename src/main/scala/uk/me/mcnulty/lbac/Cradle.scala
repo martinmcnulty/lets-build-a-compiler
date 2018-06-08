@@ -78,8 +78,31 @@ object Cradle {
     emitEpilogue()
   }
 
-  def expression(): Unit = {
+  def term(): Unit = {
     emitLn(s"mov rax, ${getNum()}")
+  }
+
+  def expression(): Unit = {
+    term()
+    emitLn("mov rdx, rax")
+    look match {
+      case '+' => add()
+      case '-' => subtract()
+      case _   => expected("addop")
+    }
+  }
+
+  def add(): Unit = {
+    matchChar('+')
+    term()
+    emitLn("add rax, rdx")
+  }
+
+  def subtract(): Unit = {
+    matchChar('-')
+    term()
+    emitLn("sub rax, rdx")
+    emitLn("neg rax")
   }
 
   def emitPrologue(): Unit = {
