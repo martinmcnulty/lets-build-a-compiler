@@ -78,17 +78,27 @@ object Cradle {
     emitEpilogue()
   }
 
-  def term(): Unit = {
-    emitLn(s"mov rax, ${getNum()}")
-  }
-
   def expression(): Unit = {
     term()
+    while (Seq('+', '-') contains look) {
     emitLn("push rax")
     look match {
       case '+' => add()
       case '-' => subtract()
       case _   => expected("addop")
+    }
+  }
+  }
+
+  def term(): Unit = {
+    factor()
+    while (Seq('*', '/') contains look) {
+      emitLn("push rax")
+      look match {
+        case '*' => multiply()
+        case '/' => divide()
+        case _   => expected("mulop")
+      }
     }
   }
 
@@ -105,6 +115,26 @@ object Cradle {
     emitLn("pop rdx")
     emitLn("sub rax, rdx")
     emitLn("neg rax")
+  }
+
+  def multiply(): Unit = {
+    matchChar('*')
+    factor()
+    emitLn("pop rdx")
+    emitLn("mul rdx")
+  }
+
+  def divide(): Unit = {
+    matchChar('/')
+    factor()
+    emitLn("mov rcx, rax")
+    emitLn("pop rax")
+    emitLn("mov rdx, 0")
+    emitLn("div rcx")
+  }
+
+  def factor(): Unit = {
+    emitLn(s"mov rax, ${getNum()}")
   }
 
   def emitPrologue(): Unit = {
