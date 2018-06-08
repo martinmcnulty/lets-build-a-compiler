@@ -84,7 +84,7 @@ object Cradle {
 
   def expression(): Unit = {
     term()
-    emitLn("mov rdx, rax")
+    emitLn("push rax")
     look match {
       case '+' => add()
       case '-' => subtract()
@@ -95,12 +95,14 @@ object Cradle {
   def add(): Unit = {
     matchChar('+')
     term()
+    emitLn("pop rdx")
     emitLn("add rax, rdx")
   }
 
   def subtract(): Unit = {
     matchChar('-')
     term()
+    emitLn("pop rdx")
     emitLn("sub rax, rdx")
     emitLn("neg rax")
   }
