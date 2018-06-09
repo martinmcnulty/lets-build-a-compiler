@@ -134,7 +134,13 @@ object Cradle {
   }
 
   def factor(): Unit = {
+    if (look == '(') {
+      matchChar('(')
+      expression()
+      matchChar(')')
+    } else {
     emitLn(s"mov rax, ${getNum()}")
+  }
   }
 
   def emitPrologue(): Unit = {
