@@ -31,5 +31,4 @@ object Cradle {
     def indented: String = block split "\n" map ("    " + _) mkString "\n"
   }
 
-
 }

@@ -13,8 +13,7 @@ trait CompileMatchers {
       MatchResult(
         actual == SuccessfulCompile(expected),
         failureMessage,
-        "Generated code matched expectation"
-      )
+        "Generated code matched expectation")
     }
   }
 
@@ -27,8 +26,7 @@ trait CompileMatchers {
       MatchResult(
         actual == AbortedCompile(expected),
         failureMessage,
-        s"Compiler failed as expected with [$expected]"
-      )
+        s"Compiler failed as expected with [$expected]")
     }
   }
 

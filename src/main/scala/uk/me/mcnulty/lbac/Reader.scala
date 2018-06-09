@@ -16,7 +16,7 @@ trait Reader {
   }
 
   def getName(): Char = {
-    if (! look.isLetter) expected("Name")
+    if (!look.isLetter) expected("Name")
     else {
       val result = look.toUpper
       getChar()
@@ -25,7 +25,7 @@ trait Reader {
   }
 
   def getNum(): Char = {
-    if (! look.isDigit) expected("Integer")
+    if (!look.isDigit) expected("Integer")
     else {
       val result = look
       getChar()

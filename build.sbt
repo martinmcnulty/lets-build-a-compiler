@@ -1,3 +1,4 @@
+import scalariform.formatter.preferences._
 
 lazy val root = (project in file("."))
   .settings(
@@ -7,5 +8,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.6",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-    )
+    ),
+    scalariformPreferences := scalariformPreferences.value
+      .setPreference(AlignSingleLineCaseStatements, true)
   )

@@ -4,7 +4,7 @@ section .data
 section .text
     global _start
 _start:
-    mov	rax, 1                  ; sys_write
+    mov rax, 1                  ; sys_write
     mov rdi, 1                  ; stdout
     mov rsi, msg                ; msg
     mov rdx, 13                 ; length

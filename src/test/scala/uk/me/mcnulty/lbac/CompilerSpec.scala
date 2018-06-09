@@ -12,8 +12,7 @@ class CompilerSpec extends FlatSpec with Matchers {
       "    push rax",
       "    mov rax, 2",
       "    pop rdx",
-      "    add rax, rdx"
-    ))
+      "    add rax, rdx"))
   }
 
   it should "fail if there is no digit after the +" in {
@@ -26,11 +25,11 @@ class CompilerSpec extends FlatSpec with Matchers {
     val out = new CapturingWriter
     val compiler = new Compiler(err, in, out)
     try {
-    compiler.expression()
+      compiler.expression()
       SuccessfulCompile(out.captured)
     } catch {
       case e: FakeAbortException => AbortedCompile(e.msg)
-  }
+    }
   }
 
 }
@@ -56,9 +55,9 @@ class FakeErrorHandling extends ErrorHandling {
 
 class StringReader(err: ErrorHandling, in: String) extends Reader {
 
-    var ix = 0
+  var ix = 0
 
-    def getChar(): Unit = ix += 1
+  def getChar(): Unit = ix += 1
   def look: Char = if (ix < in.length) in.charAt(ix) else err.abort("eof")
   protected override def expected(s: String) = err.expected(s)
 
@@ -66,10 +65,10 @@ class StringReader(err: ErrorHandling, in: String) extends Reader {
 
 class CapturingWriter extends Writer {
 
-    private var written = ""
+  private var written = ""
 
-    override protected def write(s: String): Unit = written += s
+  override protected def write(s: String): Unit = written += s
 
-    def captured: List[String] = written.split("\n").toList
+  def captured: List[String] = written.split("\n").toList
 
 }
