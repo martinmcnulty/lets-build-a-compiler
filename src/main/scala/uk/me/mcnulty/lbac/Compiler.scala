@@ -3,86 +3,74 @@ package uk.me.mcnulty.lbac
 class Compiler(in: Reader) {
 
   import in.{ look, getNum, matchChar }
-  import Cradle.{ expected, emitLn }
+  import Cradle.expected
 
-  def expression(): Unit = {
-    term()
+  def expression(): List[String] = {
+    var result = term()
     while (Seq('+', '-') contains look) {
-      emitLn("push rax")
+      result :+= "push rax"
       look match {
-        case '+' => add()
-        case '-' => subtract()
+        case '+' => result ++= add()
+        case '-' => result ++= subtract()
         case _   => expected("addop")
       }
     }
+    result
   }
 
-  def term(): Unit = {
-    factor()
+  def term(): List[String] = {
+    var result = factor()
     while (Seq('*', '/') contains look) {
-      emitLn("push rax")
+      result :+= "push rax"
       look match {
-        case '*' => multiply()
-        case '/' => divide()
+        case '*' => result ++= multiply()
+        case '/' => result ++= divide()
         case _   => expected("mulop")
       }
     }
+    result
   }
 
-  def add(): Unit = {
+  def add(): List[String] = {
     matchChar('+')
-    term()
-    emitLn("pop rdx")
-    emitLn("add rax, rdx")
+    term() ++ List(
+      "pop rdx",
+      "add rax, rdx")
   }
 
-  def subtract(): Unit = {
+  def subtract(): List[String] = {
     matchChar('-')
-    term()
-    emitLn("pop rdx")
-    emitLn("sub rax, rdx")
-    emitLn("neg rax")
+    term() ++ List(
+      "pop rdx",
+      "sub rax, rdx",
+      "neg rax")
   }
 
-  def multiply(): Unit = {
+  def multiply(): List[String] = {
     matchChar('*')
-    factor()
-    emitLn("pop rdx")
-    emitLn("mul rdx")
+    factor() ++ List(
+     "pop rdx",
+     "mul rdx")
   }
 
-  def divide(): Unit = {
+  def divide(): List[String] = {
     matchChar('/')
-    factor()
-    emitLn("mov rcx, rax")
-    emitLn("pop rax")
-    emitLn("mov rdx, 0")
-    emitLn("div rcx")
+    factor() ++ List(
+      "mov rcx, rax",
+      "pop rax",
+      "mov rdx, 0",
+      "div rcx")
   }
 
-  def factor(): Unit = {
+  def factor(): List[String] = {
     if (look == '(') {
       matchChar('(')
-      expression()
+      val result = expression()
       matchChar(')')
+      result
     } else {
-      emitLn(s"mov rax, ${getNum()}")
+      List(s"mov rax, ${getNum()}")
     }
-  }
-
-  def emitPrologue(): Unit = {
-    print(
-      """|section .text
-         |    global _start
-         |
-         |_start:
-         |""".stripMargin)
-  }
-
-  def emitEpilogue(): Unit = {
-    emitLn("mov rax, 60")
-    emitLn("mov rdi, 0")
-    emitLn("syscall")
   }
 
 }

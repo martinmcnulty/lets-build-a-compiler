@@ -31,9 +31,28 @@ object Cradle {
   def main(args: Array[String]): Unit = {
     val in = new StreamReader(System.in)
     val compiler = new Compiler(in)
-    compiler.emitPrologue()
-    compiler.expression()
-    compiler.emitEpilogue()
+    val assembly = prologue() ++ compiler.expression().indented ++ epilogue()
+    println(assembly mkString "\n")
   }
+
+  def prologue(): List[String] = {
+    List(
+      "section .text",
+      "    global _start",
+      "",
+      "_start:")
+  }
+
+  def epilogue(): List[String] = {
+    List(
+      "mov rax, 60",
+      "mov rdi, 0",
+      "syscall").indented
+  }
+
+  implicit class StringListX(strs: List[String]) {
+    def indented: List[String] = strs map { s => s"    $s" }
+  }
+
 
 }
