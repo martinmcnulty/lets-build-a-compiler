@@ -18,40 +18,33 @@ object Cradle {
 
   def isDigit(c: Char): Boolean = c.isDigit
 
-  def emit(s: String): Unit = {
-    print("    ")
-    print(s)
-  }
-
-  def emitLn(s: String): Unit = {
-    emit(s)
-    println()
-  }
 
   def main(args: Array[String]): Unit = {
     val in = new StreamReader(System.in)
-    val compiler = new Compiler(in)
-    val assembly = prologue() ++ compiler.expression().indented ++ epilogue()
-    println(assembly mkString "\n")
+    val out = new StreamWriter(System.out)
+    val compiler = new Compiler(in, out)
+    emitPrologue(out)
+    compiler.expression()
+    emitEpilogue(out)
   }
 
-  def prologue(): List[String] = {
-    List(
-      "section .text",
-      "    global _start",
-      "",
-      "_start:")
+  def emitPrologue(out: Writer): Unit = {
+    out.emitBlock(
+      """|section .text
+         |    global _start
+         |
+         |_start:""".stripMargin)
   }
 
-  def epilogue(): List[String] = {
-    List(
-      "mov rax, 60",
-      "mov rdi, 0",
-      "syscall").indented
+  def emitEpilogue(out: Writer): Unit = {
+    out.emitBlock(
+      """|mov rax, 60
+         |mov rdi, 0
+         |syscall""".stripMargin.indented)
   }
 
-  implicit class StringListX(strs: List[String]) {
-    def indented: List[String] = strs map { s => s"    $s" }
+  implicit class StringX(block: String) {
+    def indented: String = block split "\n" map ("    " + _) mkString "\n"
   }
 
 
