@@ -7,7 +7,11 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
   import errorHandling.expected
 
   def expression(): Unit = {
-    term()
+    if (isAddOp(look)) {
+      emitLn("mov rax, 0")
+    } else {
+      term()
+    }
     while (Seq('+', '-') contains look) {
       emitLn("push rax")
       look match {
@@ -70,5 +74,7 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
       emitLn(s"mov rax, ${getNum()}")
     }
   }
+
+  def isAddOp(c: Char): Boolean = Seq('+', '-') contains c
 
 }

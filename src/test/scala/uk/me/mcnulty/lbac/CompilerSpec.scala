@@ -19,6 +19,16 @@ class CompilerSpec extends FlatSpec with Matchers {
     compile("3+") should abortWith("Integer expected")
   }
 
+  it should "handle unary minus" in {
+    compile("-1") should produce(List(
+      "    mov rax, 0",
+      "    push rax",
+      "    mov rax, 1",
+      "    pop rdx",
+      "    sub rax, rdx",
+      "    neg rax"))
+  }
+
   def compile(input: String): CompileResult = {
     val err = new FakeErrorHandling
     val in = new StringReader(err, input + '\u0000')
