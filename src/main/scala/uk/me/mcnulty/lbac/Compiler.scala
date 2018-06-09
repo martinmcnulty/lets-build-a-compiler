@@ -1,10 +1,10 @@
 package uk.me.mcnulty.lbac
 
-class Compiler(in: Reader, out: Writer) {
+class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
 
   import in.{ look, getNum, matchChar }
   import out.emitLn
-  import Cradle.expected
+  import errorHandling.expected
 
   def expression(): Unit = {
     term()

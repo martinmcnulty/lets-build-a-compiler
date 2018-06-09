@@ -4,11 +4,11 @@ import java.io.InputStream
 
 trait Reader {
 
-  import Cradle.{ isAlpha, isDigit, expected }
-
   def look: Char
 
   def getChar(): Unit
+
+  protected def expected(s: String): Nothing
 
   def matchChar(x: Char): Unit = {
     if (look == x) getChar()
@@ -16,7 +16,7 @@ trait Reader {
   }
 
   def getName(): Char = {
-    if (! isAlpha(look)) expected("Name")
+    if (! look.isLetter) expected("Name")
     else {
       val result = look.toUpper
       getChar()
@@ -25,7 +25,7 @@ trait Reader {
   }
 
   def getNum(): Char = {
-    if (! isDigit(look)) expected("Integer")
+    if (! look.isDigit) expected("Integer")
     else {
       val result = look
       getChar()
@@ -35,9 +35,10 @@ trait Reader {
 
 }
 
-class StreamReader(in: InputStream) extends Reader {
+class StreamReader(err: ErrorHandling, in: InputStream) extends Reader {
   private var nextChar: Int = -1
-  def look: Char = if (nextChar < 0) Cradle.abort("eof") else nextChar.toChar
+  def look: Char = if (nextChar < 0) err.abort("eof") else nextChar.toChar
   def getChar(): Unit = nextChar = System.in.read()
+  override protected def expected(s: String) = err.expected(s)
   getChar()
 }

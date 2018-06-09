@@ -2,27 +2,11 @@ package uk.me.mcnulty.lbac
 
 object Cradle {
 
-  def error(s: String): Unit = {
-    println();
-    println(s"Error: $s.")
-  }
-
-  def abort(s: String): Nothing = {
-    error(s)
-    sys exit 1
-  }
-
-  def expected(s: String): Nothing = abort(s"$s expected")
-
-  def isAlpha(c: Char): Boolean = c.isLetter
-
-  def isDigit(c: Char): Boolean = c.isDigit
-
-
   def main(args: Array[String]): Unit = {
-    val in = new StreamReader(System.in)
+    val err = new DefaultErrorHandling
+    val in = new StreamReader(err, System.in)
     val out = new StreamWriter(System.out)
-    val compiler = new Compiler(in, out)
+    val compiler = new Compiler(err, in, out)
     emitPrologue(out)
     compiler.expression()
     emitEpilogue(out)
