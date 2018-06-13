@@ -65,13 +65,28 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
     emitLn("div rcx")
   }
 
+  /**
+   * Handle an identifier, which might be a variable or a function
+   * call (we only support empty parameter lists for now)
+   */
+  def ident(): Unit = {
+    val name = getName()
+    if (look == '(') {
+      matchChar('(')
+      matchChar(')')
+      emitLn(s"call $name")
+    } else {
+      emitLn(s"mov rax, $name")
+    }
+  }
+
   def factor(): Unit = {
     if (look == '(') {
       matchChar('(')
       expression()
       matchChar(')')
     } else if (look.isLetter) {
-      emitLn(s"mov rax, ${getName()}")
+      ident()
     } else {
       emitLn(s"mov rax, ${getNum()}")
     }

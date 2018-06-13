@@ -38,6 +38,11 @@ class CompilerSpec extends FlatSpec with Matchers {
       "    add rax, rdx"))
   }
 
+  it should "handle call sites for functions with no parameters" in {
+    compile("f()") should produce(List(
+      "    call F"))
+  }
+
   def compile(input: String): CompileResult = {
     val err = new FakeErrorHandling
     val in = new StringReader(err, input + '\u0000')
