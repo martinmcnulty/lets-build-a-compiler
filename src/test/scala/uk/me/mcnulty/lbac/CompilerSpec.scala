@@ -29,6 +29,15 @@ class CompilerSpec extends FlatSpec with Matchers {
       "    neg rax"))
   }
 
+  it should "load variables in expressions" in {
+    compile("a+3") should produce(List(
+      "    mov rax, A",
+      "    push rax",
+      "    mov rax, 3",
+      "    pop rdx",
+      "    add rax, rdx"))
+  }
+
   def compile(input: String): CompileResult = {
     val err = new FakeErrorHandling
     val in = new StringReader(err, input + '\u0000')

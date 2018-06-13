@@ -2,7 +2,7 @@ package uk.me.mcnulty.lbac
 
 class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
 
-  import in.{ look, getNum, matchChar }
+  import in.{ look, getName, getNum, matchChar }
   import out.emitLn
   import errorHandling.expected
 
@@ -70,6 +70,8 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
       matchChar('(')
       expression()
       matchChar(')')
+    } else if (look.isLetter) {
+      emitLn(s"mov rax, ${getName()}")
     } else {
       emitLn(s"mov rax, ${getNum()}")
     }
