@@ -4,7 +4,6 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
 
   import in.{ look, getName, getNum, matchChar }
   import out.emitLn
-  import errorHandling.expected
 
   def expression(): Unit = {
     if (isAddOp(look)) {
@@ -17,7 +16,6 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
       look match {
         case '+' => add()
         case '-' => subtract()
-        case _   => expected("addop")
       }
     }
   }
@@ -29,7 +27,6 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
       look match {
         case '*' => multiply()
         case '/' => divide()
-        case _   => expected("mulop")
       }
     }
   }
