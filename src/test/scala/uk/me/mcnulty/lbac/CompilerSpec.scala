@@ -7,7 +7,7 @@ import CompileMatchers._
 class CompilerSpec extends FlatSpec with Matchers {
 
   "The compiler" should "compile single digit additions" in {
-    compile("3+2") should produce(List(
+    compileExpression("3+2") should produce(List(
       "    mov rax, 3",
       "    push rax",
       "    mov rax, 2",
@@ -16,11 +16,11 @@ class CompilerSpec extends FlatSpec with Matchers {
   }
 
   it should "fail if there is no digit after the +" in {
-    compile("3+") should abortWith("Integer expected")
+    compileExpression("3+") should abortWith("Integer expected")
   }
 
   it should "handle unary minus" in {
-    compile("-1") should produce(List(
+    compileExpression("-1") should produce(List(
       "    mov rax, 0",
       "    push rax",
       "    mov rax, 1",
@@ -30,7 +30,7 @@ class CompilerSpec extends FlatSpec with Matchers {
   }
 
   it should "load variables in expressions" in {
-    compile("a+3") should produce(List(
+    compileExpression("a+3") should produce(List(
       "    mov rax, A",
       "    push rax",
       "    mov rax, 3",
@@ -39,17 +39,25 @@ class CompilerSpec extends FlatSpec with Matchers {
   }
 
   it should "handle call sites for functions with no parameters" in {
-    compile("f()") should produce(List(
+    compileExpression("f()") should produce(List(
       "    call F"))
   }
 
-  def compile(input: String): CompileResult = {
+  it should "reject two expressions separated by a space" in {
+    compile("1+2 3+4") should abortWith("Newline expected")
+  }
+
+  def compileExpression(input: String): CompileResult = wrap(input, _.expression())
+
+  def compile(input: String): CompileResult = wrap(input, _.compile())
+
+  private def wrap(input: String, f: Compiler => Unit): CompileResult = {
     val err = new FakeErrorHandling
     val in = new StringReader(err, input + '\u0000')
     val out = new CapturingWriter
     val compiler = new Compiler(err, in, out)
     try {
-      compiler.expression()
+      f(compiler)
       SuccessfulCompile(out.captured)
     } catch {
       case e: FakeAbortException => AbortedCompile(e.msg)

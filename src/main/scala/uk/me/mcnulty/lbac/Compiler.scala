@@ -4,6 +4,14 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
 
   import in.{ look, getName, getNum, matchChar }
   import out.emitLn
+  import errorHandling.expected
+
+  def compile(): Unit = {
+    emitPrologue(out)
+    expression()
+    if (look != '\n') expected("Newline")
+    emitEpilogue(out)
+  }
 
   def expression(): Unit = {
     if (isAddOp(look)) {
@@ -90,5 +98,24 @@ class Compiler(errorHandling: ErrorHandling, in: Reader, out: Writer) {
   }
 
   def isAddOp(c: Char): Boolean = Seq('+', '-') contains c
+
+  def emitPrologue(out: Writer): Unit = {
+    out.emitBlock(
+      """|section .text
+         |    global _start
+         |
+         |_start:""".stripMargin)
+  }
+
+  def emitEpilogue(out: Writer): Unit = {
+    out.emitBlock(
+      """|mov rax, 60
+         |mov rdi, 0
+         |syscall""".stripMargin.indented)
+  }
+
+  implicit class StringX(block: String) {
+    def indented: String = block split "\n" map ("    " + _) mkString "\n"
+  }
 
 }
